@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xmld="http://www.w3.org/2001/XMLSchema-instance"
+      autoReload="true"
+      internalLogLevel="Warn"
+      internalLogFile="internal-nlog.txt">
+	<targets>
+		<target xmld:type="Console" name="console"
+				layout="${shortdate} | ${level:uppercase=true} | ${logger} | ${message}${onexception:${newline}EXCEPTION\\: ${exception:format=ToString}}" />
+
+		<target xmld:type="File" name="file"
+				fileName="logs\${shortdate}.log"
+				layout="${shortdate} | ${level:uppercase=true} | ${logger} | ${message}${onexception:${newline}EXCEPTION\\: ${exception:format=ToString}}"
+				keepFileOpen="false"
+				archiveEvery="Day"
+				maxArchiveFiles="20"/>
+	</targets>
+	<rules>
+		<logger name="*" minlevel="Debug" writeTo="console,file" />
+	</rules>
+</nlog>
+
