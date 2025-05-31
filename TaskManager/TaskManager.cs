@@ -7,6 +7,7 @@ namespace Manage.UI
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IManagerRepository _managerRepository;
 
+
         public Manager(IManagerRepository managerRepository)
         {
             Logger.Info("Инициализация конструктора");
@@ -33,14 +34,44 @@ namespace Manage.UI
 
         private async void AddBTN_Click(object sender, EventArgs e)
         {
-            Logger.Info("Пользователь нажал на кнопку ДОБАВИТЬ");
-            
-            string task = textTask.Text.Trim();
-            if (!string.IsNullOrEmpty(task))
+            string input = textTask.Text.Trim();
+            if (string.IsNullOrEmpty(input))
+                return;
+
+            string[] parts = input.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length >= 4)
             {
-                await _managerRepository.AddTaskAsync(task);
-                textTask.Clear();
+                string title = parts[0].Trim();
+                string name = parts[1].Trim();
+                string description = parts[2].Trim();
+                string deadlineStr = parts[3].Trim();
+
+                DateTime deadline;
+                if (!DateTime.TryParse(deadlineStr, out deadline))
+                {
+                    MessageBox.Show("Неверный формат дедлайна");
+                    return;
+                }
+
+                var executors = await _managerRepository.GetAllExecutorsAsync();
+                var selectedExecutor = executors.Find(e => e.Name == name);
+
+                if (selectedExecutor == null)
+                {
+
+                    return;
+                }
+
+                int executor = selectedExecutor.Id;
+
+                await _managerRepository.AddTaskAsync(title, description, executor, name, deadline);
                 await LoadTasksAsync();
+                textTask.Clear();
+            }
+            else
+            {
+                MessageBox.Show("Введите задачу в формате: Название | Исполнитель | Описание | Дедлайн");
             }
         }
 
@@ -57,16 +88,20 @@ namespace Manage.UI
         private async void EditBTN_Click(object sender, EventArgs e)
         {
             Logger.Info("Пользователь нажал на кнопку ИЗМЕНИТЬ");
+
             if (listTasks.SelectedItem is TaskItem selectedTask)
             {
                 string newTitle = textTask.Text.Trim();
-                if (!string.IsNullOrEmpty(newTitle))
-                {
-                    await _managerRepository.UpdateTaskAsync(selectedTask.Id, newTitle);
-                    textTask.Clear();
-                    await LoadTasksAsync();
-                }
+                string newDescription = selectedTask.Description;
+                string newName = selectedTask.Name;
+                DateTime newDeadline = selectedTask.Deadline;
+
+                await _managerRepository.UpdateTaskAsync(selectedTask, newTitle, newDescription, selectedTask.Executor, newName, newDeadline);
+                textTask.Clear();
+                await LoadTasksAsync();
             }
         }
+
+        
     }
 }

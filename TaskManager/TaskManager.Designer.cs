@@ -32,6 +32,7 @@
             AddBTN = new Button();
             DeleteBTN = new Button();
             EditBTN = new Button();
+            label1 = new Label();
             SuspendLayout();
             // 
             // listTasks
@@ -91,18 +92,31 @@
             EditBTN.UseVisualStyleBackColor = false;
             EditBTN.Click += EditBTN_Click;
             // 
+            // label1
+            // 
+            label1.Anchor = AnchorStyles.Bottom;
+            label1.AutoSize = true;
+            label1.FlatStyle = FlatStyle.Popup;
+            label1.Font = new Font("Impact", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            label1.Location = new Point(176, 365);
+            label1.Name = "label1";
+            label1.Size = new Size(436, 19);
+            label1.TabIndex = 5;
+            label1.Text = "Вводите в формате: Название| Описание| Исполнитель| Дедлайн";
+            // 
             // Manager
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(label1);
             Controls.Add(textTask);
             Controls.Add(listTasks);
             Controls.Add(AddBTN);
             Controls.Add(DeleteBTN);
             Controls.Add(EditBTN);
             Name = "Manager";
-            Text = "Задачник";
+            Text = "Задачи";
             ResumeLayout(false);
             PerformLayout();
         }
@@ -114,5 +128,6 @@
         private Button EditBTN;
         private TextBox textTask;
         private ListBox listTasks;
+        private Label label1;
     }
 }
